@@ -27,7 +27,7 @@ function install_linux {
         ${COMMAND_UPDATE}
     fi
 
-	# workaround for ubuntu setting exit code, when START=no (default) is set after package install and start
+    # workaround for ubuntu setting exit code, when START=no (default) is set after package install and start
     if [[ ${UBUNTU_HACK} == 1 ]] ; then
         ${COMMAND_INSTALL_PACKAGE} || true
     else
@@ -41,9 +41,9 @@ function install_linux {
         ssldir = $vardir/ssl
         server = PUPPET_MASTER
 
-    [agent]
-        classfile = $vardir/classes.txt
-        localconfig = $vardir/localconfig' > /etc/puppet/puppet.conf
+[agent]
+    classfile = $vardir/classes.txt
+    localconfig = $vardir/localconfig' > /etc/puppet/puppet.conf
 
     sed -i "s/PUPPET_MASTER/$PARAM_PM/g" /etc/puppet/puppet.conf
 
@@ -145,76 +145,76 @@ function install_osx {
 set -e
 
 if [[ ${PARAM_PC_REPO} == 1 ]] ; then
-	REPO_PC=1
+    REPO_PC=1
 fi
 
 if [[ ! -f /etc/os-release ]] ; then
 
-	if [[ -f /etc/centos-release ]] ; then
-		NAME="CentOS Linux"
-		VERSION_ID=$(cat /etc/centos-release | cut -d" " -f3 | cut -d "." -f1)
-	elif [[ "$OSTYPE" == "darwin"* ]] ; then
-	    NAME="Darwin"
+    if [[ -f /etc/centos-release ]] ; then
+        NAME="CentOS Linux"
+        VERSION_ID=$(cat /etc/centos-release | cut -d" " -f3 | cut -d "." -f1)
+    elif [[ "$OSTYPE" == "darwin"* ]] ; then
+        NAME="Darwin"
     else
         echo "No /etc/os-release or other supported *-release file, cannot proceed"
         exit 1
-	fi
+    fi
 else
     . /etc/os-release
 fi
 
 case ${NAME} in
-	"Ubuntu")
-		. /etc/lsb-release
+    "Ubuntu")
+        . /etc/lsb-release
 
-		if [[ ${REPO_PC} == 1 ]] ; then
-			PACKAGE_URL="https://apt.puppetlabs.com/puppetlabs-release-pc1-${DISTRIB_CODENAME}.deb"
-		else
-			PACKAGE_URL="https://apt.puppetlabs.com/puppetlabs-release-${DISTRIB_CODENAME}.deb"
-		fi
+        if [[ ${REPO_PC} == 1 ]] ; then
+            PACKAGE_URL="https://apt.puppetlabs.com/puppetlabs-release-pc1-${DISTRIB_CODENAME}.deb"
+        else
+            PACKAGE_URL="https://apt.puppetlabs.com/puppetlabs-release-${DISTRIB_CODENAME}.deb"
+        fi
 
-	    if [[ ${DISTRIB_CODENAME} == "xenial" ]] ; then
-	  		if [[ ${REPO_PC} == 0 ]] ; then
-	            INSTALL_DISTRIBUTION_PACKAGE=1
-       	    fi
+        if [[ ${DISTRIB_CODENAME} == "xenial" ]] ; then
+            if [[ ${REPO_PC} == 0 ]] ; then
+                INSTALL_DISTRIBUTION_PACKAGE=1
+            fi
         fi
 
         if [[ ${DISTRIB_CODENAME} == "trusty" ]] ; then
             UBUNTU_HACK=1
         fi
 
-	 	COMMAND_INSTALL="dpkg -i"
-	 	COMMAND_UPDATE="apt-get update"
-	 	COMMAND_INSTALL_PACKAGE="apt-get install puppet -y"
-	 	SERVICE_ENABLE_FILE="/etc/default/puppet"
-	    if [[ ${DISTRIB_CODENAME} == "xenial" ]] ; then
+        COMMAND_INSTALL="dpkg -i"
+        COMMAND_UPDATE="apt-get update"
+        COMMAND_INSTALL_PACKAGE="apt-get install puppet -y"
+        SERVICE_ENABLE_FILE="/etc/default/puppet"
+        if [[ ${DISTRIB_CODENAME} == "xenial" ]] ; then
             PUPPET_ENABLE=1
         fi
 
         SERVICE_AUTOSTART="update-rc.d puppet defaults"
 
-	 	install_linux
-	;;
-	"CentOS Linux")
-		if [[ ${REPO_PC} == 1 ]] ; then
-			PACKAGE_URL="https://yum.puppetlabs.com/puppetlabs-release-pc1-el-${VERSION_ID}.noarch.rpm"
-		else
-			PACKAGE_URL="https://yum.puppetlabs.com/puppetlabs-release-el-${VERSION_ID}.noarch.rpm"
-		fi
+        install_linux
+    ;;
+    "CentOS Linux")
+        if [[ ${REPO_PC} == 1 ]] ; then
+            PACKAGE_URL="https://yum.puppetlabs.com/puppetlabs-release-pc1-el-${VERSION_ID}.noarch.rpm"
+        else
+            PACKAGE_URL="https://yum.puppetlabs.com/puppetlabs-release-el-${VERSION_ID}.noarch.rpm"
+        fi
 
-		COMMAND_INSTALL="rpm -ivh"
-		COMMAND_UPDATE="yum clean all"
-		COMMAND_INSTALL_PACKAGE="yum install puppet -y"
-		SERVICE_ENABLE_FILE=""
-	 	SERVICE_AUTOSTART="chkconfig puppet on"
+        COMMAND_INSTALL="rpm -ivh"
+        COMMAND_UPDATE="yum clean all"
+        COMMAND_INSTALL_PACKAGE="yum install puppet -y"
+        SERVICE_ENABLE_FILE=""
+        SERVICE_AUTOSTART="chkconfig puppet on"
 
-	 	install_linux
-	;;
-	"Darwin")
-	    # osx
-	    install_osx
-	;;
-	*)
-		echo "System version $NAME not supported"
+        install_linux
+    ;;
+    "Darwin")
+        # osx
+        install_osx
+    ;;
+    *)
+        echo "System version $NAME not supported"
 esac
 
