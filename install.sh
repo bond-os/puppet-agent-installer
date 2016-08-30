@@ -152,7 +152,7 @@ if [[ ! -f /etc/os-release ]] ; then
 
 	if [[ -f /etc/centos-release ]] ; then
 		NAME="CentOS Linux"
-		VERSION_ID="cat /etc/centos-release | cut -d" " -f3 | cut -d "." -f1"
+		VERSION_ID=$(cat /etc/centos-release | cut -d" " -f3 | cut -d "." -f1)
 	elif [[ "$OSTYPE" == "darwin"* ]] ; then
 	    NAME="Darwin"
     else
